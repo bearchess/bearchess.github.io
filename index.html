@@ -1,1 +1,57 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+	<title>对小A的爱</title>
+	<style>
+		body {
+			background-color: #F9D9B7;
+			font-family: Arial, sans-serif;
+			text-align: center;
+		}
+		
+		h1 {
+			color: #B454FF;
+			font-size: 4rem;
+			margin-top: 2rem;
+			text-shadow: 2px 2px #FFC1C1;
+		}
+		
+		p {
+			color: #484848;
+			font-size: 2rem;
+			margin-top: 1rem;
+		}
+		
+		button {
+			background-color: #FFC1C1;
+			border: none;
+			color: #fff;
+			font-size: 2rem;
+			margin-top: 2rem;
+			padding: 1rem 2rem;
+			cursor: pointer;
+			box-shadow: 2px 2px #B454FF;
+		}
+		
+		button:hover {
+			background-color: #B454FF;
+			box-shadow: none;
+			transform: scale(1.05);
+			transition: all 0.2s ease-in-out;
+		}
+	</style>
+</head>
+<body>
+	<h1>对小A的爱</h1>
+	<p>我想对小A说:</p>
+	<textarea id="message" rows="5" cols="50"></textarea><br>
+	<button onclick="displayMessage()">发送</button>
+	
+	<script>
+		function displayMessage() {
+			var message = document.getElementById("message").value;
+			alert("小A，我想对你说：" + message);
+		}
+	</script>
+</body>
+</html>
