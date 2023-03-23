@@ -4,54 +4,61 @@
 	<title>对小A的爱</title>
 	<style>
 		body {
-			background-color: #F9D9B7;
+			background-color: pink;
 			font-family: Arial, sans-serif;
-			text-align: center;
 		}
 		
 		h1 {
-			color: #B454FF;
-			font-size: 4rem;
-			margin-top: 2rem;
-			text-shadow: 2px 2px #FFC1C1;
+			color: white;
+			font-size: 3rem;
+			text-align: center;
+			margin-top: 50px;
+			text-shadow: 2px 2px 4px #000000;
 		}
 		
 		p {
-			color: #484848;
-			font-size: 2rem;
-			margin-top: 1rem;
+			color: #333333;
+			font-size: 1.5rem;
+			line-height: 1.5;
+			margin: 30px;
+			text-align: center;
 		}
 		
-		button {
-			background-color: #FFC1C1;
+		img {
+			display: block;
+			margin: 0 auto;
+			border-radius: 50%;
+			box-shadow: 2px 2px 4px #000000;
+		}
+		
+		.button {
+			display: block;
+			margin: 30px auto;
+			padding: 20px;
+			background-color: #333333;
+			color: white;
 			border: none;
-			color: #fff;
-			font-size: 2rem;
-			margin-top: 2rem;
-			padding: 1rem 2rem;
+			border-radius: 5px;
+			font-size: 1.2rem;
 			cursor: pointer;
-			box-shadow: 2px 2px #B454FF;
+			transition: background-color 0.3s ease;
 		}
 		
-		button:hover {
-			background-color: #B454FF;
-			box-shadow: none;
-			transform: scale(1.05);
-			transition: all 0.2s ease-in-out;
+		.button:hover {
+			background-color: #666666;
 		}
 	</style>
 </head>
 <body>
 	<h1>对小A的爱</h1>
-	<p>我想对小A说:</p>
-	<textarea id="message" rows="5" cols="50"></textarea><br>
-	<button onclick="displayMessage()">发送</button>
-	
+	<img src="https://picsum.photos/id/237/200/200" alt="小A的照片">
+	<p>你是我的一切，我的世界因你而更加美好。无论何时何地，我都会爱你直到永远。</p>
+	<button class="button">点击发送爱心</button>
 	<script>
-		function displayMessage() {
-			var message = document.getElementById("message").value;
-			alert("小A，我想对你说：" + message);
-		}
+		const button = document.querySelector('.button');
+		button.addEventListener('click', () => {
+			alert('❤️❤️❤️ 我爱你，小A ❤️❤️❤️');
+		});
 	</script>
 </body>
 </html>
