@@ -1,116 +1,209 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>表白页面</title>
-	<style>
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-			font-family: Arial, sans-serif;
-		}
+  <meta charset="UTF-8">
+  <title>表白页面</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      text-align: center;
+      font-size: 2em;
+    }
 
-		body {
-			background-color: #111;
-			color: #fff;
-			text-align: center;
-		}
+    .heart {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      transform: rotate(45deg);
+      animation: pulse 1.2s cubic-bezier(0.66, 0, 0, 1.17) infinite;
+    }
 
-		h1 {
-			font-size: 72px;
-			margin: 100px 0 50px 0;
-			font-weight: normal;
-			text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-		}
+    .heart:before,
+    .heart:after {
+      content: "";
+      position: absolute;
+      width: inherit;
+      height: inherit;
+      background-color: inherit;
+      border-radius: 50%;
+      transform: rotate(45deg);
+    }
 
-		p {
-			font-size: 24px;
-			line-height: 1.5;
-			margin: 50px 0;
-		}
+    .heart:before {
+      left: -5px;
+    }
 
-		button {
-			background-color: #f00;
-			border: none;
-			color: #fff;
-			font-size: 24px;
-			padding: 10px 20px;
-			border-radius: 5px;
-			cursor: pointer;
-			transition: background-color 0.2s ease-in-out;
-		}
+    .heart:after {
+      top: -5px;
+    }
 
-		button:hover {
-			background-color: #d00;
-		}
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.4);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
 
-		.container {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: center;
-			align-items: center;
-			height: 100vh;
-			overflow: hidden;
-			position: relative;
-			z-index: 1;
-		}
+    #container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: pointer;
+    }
 
-		.box {
-			width: 50px;
-			height: 50px;
-			background-color: #f00;
-			position: absolute;
-			opacity: 0;
-			animation: box-fade-in 1s forwards;
-			animation-delay: calc(0.05s * var(--delay));
-		}
+    #text {
+      margin-top: 10%;
+      font-size: 6em;
+      text-shadow: 0 0 10px #fff;
+    }
 
-		@keyframes box-fade-in {
-			0% {
-				opacity: 0;
-				transform: translateY(-100vh) rotate(0deg);
-			}
-			50% {
-				opacity: 1;
-			}
-			100% {
-				transform: translateY(100vh) rotate(720deg);
-				opacity: 0;
-			}
-		}
+    #firework {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      animation: firework 2s ease-out forwards;
+    }
 
-		.particles {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			z-index: -1;
-		}
+    @keyframes firework {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(3);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="text">
+      Click me!
+    </div>
+  </div>
+  <script>
+function fireworks() {
+  var container = document.getElementById("container");
+  container.style.cursor = "default";
+  container.innerHTML = "";
+  var colors = ["#f00", "#0f0", "#00f", "#ff0", "#f0f", "#0ff"];
+  var texts = [
+    "I love you",
+    "Te amo",
+    "Ti amo",
+    "Je t'aime",
+    "Ich liebe dich",
+    "愛してる"
+  ];
+  var fontSize = ["72px", "64px", "56px", "48px", "40px", "32px"];
+  var fireworks = new Fireworks();
+  fireworks.initialize(container);
+  fireworks.setColors(colors);
+  fireworks.setTexts(texts);
+  fireworks.setFontSizes(fontSize);
+  fireworks.start();
+}
 
-		.particle {
-			position: absolute;
-			width: 10px;
-			height: 10px;
-			background-color: #fff;
-			border-radius: 50%;
-			animation: particle-move 2s linear forwards;
-			animation-delay: calc(0.05s * var(--delay));
-			opacity: 0;
-			transform-origin: center;
-		}
+var Fireworks = function () {
+  var PARTICLE_NUM = 300,
+    PARTICLE_DIST = 20,
+    PARTICLE_SIZE_BASE = 5,
+    TEXT_DURATION = 3000,
+    EXPLODE_TIME_RANGE = [1000, 2000],
+    EXPLODE_SIZE_RANGE = [30, 80],
+    EXPLODE_DISTANCE_RANGE = [50, 100],
+    PARTICLE_VELOCITY_RANGE = [0.1, 1.5],
+    PARTICLE_GRAVITY = 0.05,
+    PARTICLE_ALPHA_FADEOUT_RATE = 0.01,
+    PARTICLE_SIZE_FADEOUT_RATE = 0.1,
+    PARTICLE_SHRINK_RATE = 0.8;
 
-		@keyframes particle-move {
-			0% {
-				transform: translate(0, 0) scale(1);
-				opacity: 0;
-			}
-			50% {
-				transform: translate(calc(var(--x) * 1px), calc(var(--y) * 1px)) scale(1.5);
-				opacity: 1;
-			}
-			100% {
-				transform: translate(calc(var(--x) * 1px), calc(var(--y) * 1px)) scale(1.5);
-				opacity: 0;
-			}
+  var canvas = null,
+    context = null,
+    particles = [],
+    particleTexts = [],
+    colors = [],
+    fontSizes = [],
+    maxWidth = 0,
+    maxHeight = 0,
+    mousePos = { x: 0, y: 0 };
+
+  var Particle = function (x, y, vx, vy, size, color, text, fontSize) {
+    this.x = x;
+    this.y = y;
+    this.vx = vx;
+    this.vy = vy;
+    this.size = size;
+    this.color = color;
+    this.text = text;
+    this.fontSize = fontSize;
+    this.alpha = 1;
+  };
+
+  Particle.prototype.update = function () {
+    this.vy += PARTICLE_GRAVITY;
+    this.x += this.vx;
+    this.y += this.vy;
+    this.alpha -= PARTICLE_ALPHA_FADEOUT_RATE;
+    this.size -= PARTICLE_SIZE_FADEOUT_RATE;
+  };
+
+  Particle.prototype.draw = function () {
+    context.globalAlpha = this.alpha;
+    context.fillStyle = this.color;
+    context.font = this.fontSize + " Arial";
+    context.fillText(this.text, this.x, this.y);
+  };
+
+  function init() {
+    canvas = document.createElement("canvas");
+    context = canvas.getContext("2d");
+    resize();
+
+    window.addEventListener("resize", resize);
+    document.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("click", onClick);
+
+    document.body.appendChild(canvas);
+  }
+
+  function start() {
+    setInterval(function () {
+      draw();
+      update();
+    }, 30);
+  }
+
+  function initialize(container) {
+    init();
+    container.appendChild(canvas);
+  }
+
+  function setColors(newColors) {
+    colors = newColors;
+  }
+
+  function setTexts(newTexts) {
+    particleTexts = newTexts;
+  }
+
+  function setFontSizes(newFontSizes) {
+    fontSizes = newFontSizes;
+  }
+
+  function resize() {
+    canvas.width
