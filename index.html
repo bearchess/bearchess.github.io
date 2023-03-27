@@ -1,64 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>对小A的爱</title>
+	<meta charset="UTF-8">
+	<title>表白页面</title>
 	<style>
 		body {
-			background-color: pink;
+			background-color: #292929;
 			font-family: Arial, sans-serif;
+			text-align: center;
+			margin-top: 50px;
+			color: #fff;
 		}
 		
 		h1 {
-			color: white;
-			font-size: 3rem;
-			text-align: center;
-			margin-top: 50px;
-			text-shadow: 2px 2px 4px #000000;
+			font-size: 72px;
+			margin-bottom: 30px;
+			font-weight: normal;
+		}
+		
+		#heart {
+			font-size: 100px;
+			color: #f00;
+			animation: pulse 1s ease-in-out infinite;
 		}
 		
 		p {
-			color: #333333;
-			font-size: 1.5rem;
+			font-size: 24px;
 			line-height: 1.5;
-			margin: 30px;
-			text-align: center;
+			margin: 30px 0;
 		}
 		
-		img {
-			display: block;
-			margin: 0 auto;
-			border-radius: 50%;
-			box-shadow: 2px 2px 4px #000000;
-		}
-		
-		.button {
-			display: block;
-			margin: 30px auto;
-			padding: 20px;
-			background-color: #333333;
-			color: white;
+		button {
+			background-color: #f00;
 			border: none;
+			color: #fff;
+			font-size: 24px;
+			padding: 10px 20px;
 			border-radius: 5px;
-			font-size: 1.2rem;
 			cursor: pointer;
-			transition: background-color 0.3s ease;
+			transition: background-color 0.2s ease-in-out;
 		}
 		
-		.button:hover {
-			background-color: #666666;
+		button:hover {
+			background-color: #d00;
+		}
+		
+		@keyframes pulse {
+			0% {
+				transform: scale(1);
+			}
+			50% {
+				transform: scale(1.2);
+			}
+			100% {
+				transform: scale(1);
+			}
 		}
 	</style>
 </head>
 <body>
-	<h1>对小A的爱</h1>
-	<img src="https://picsum.photos/id/237/200/200" alt="小A的照片">
-	<p>你是我的一切，我的世界因你而更加美好。无论何时何地，我都会爱你直到永远。</p>
-	<button class="button">点击发送爱心</button>
-	<script>
-		const button = document.querySelector('.button');
-		button.addEventListener('click', () => {
-			alert('❤️❤️❤️ 我爱你，小A ❤️❤️❤️');
-		});
-	</script>
+	<h1>我<span id="heart">❤</span>你</h1>
+	<p>亲爱的XXX，我一直默默地喜欢着你，每一天都在思念着你的笑容和温柔。</p>
+	<p>我想告诉你：<span id="love">我爱你</span>，愿意和你一起走过余生的每一个早晨和夜晚。</p>
+	<button onclick="alert('我也爱你')">接受我的爱</button>
 </body>
 </html>
