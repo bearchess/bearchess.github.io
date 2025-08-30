@@ -1,34 +1,509 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>表白页面</title>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$ whoami - Noah SRE Engineer</title>
     <style>
-      body {
-        background-color: #000;
-        color: #fff;
-        text-align: center;
-        font-size: 3em;
-        padding-top: 10%;
-      }
-      #firework-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-      }
+        /* 使用系统等宽字体，避免外部字体加载问题 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .terminal {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: #161b22;
+            border-radius: 8px;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: #21262d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 8px;
+            margin-right: 16px;
+        }
+
+        .btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .btn-close { background: #ff5f56; }
+        .btn-minimize { background: #ffbd2e; }
+        .btn-maximize { background: #27ca3f; }
+
+        .terminal-title {
+            color: #8b949e;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .terminal-content {
+            padding: 24px;
+            min-height: 600px;
+        }
+
+        .prompt-line {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .prompt {
+            color: #7c3aed;
+            margin-right: 8px;
+            font-weight: 600;
+        }
+
+        .command {
+            color: #58a6ff;
+            font-weight: 500;
+        }
+
+        .output {
+            margin-left: 0;
+            margin-bottom: 20px;
+            color: #c9d1d9;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 12px 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .filename {
+            color: #f0883e;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .line-numbers {
+            color: #6e7681;
+            margin-right: 16px;
+            user-select: none;
+            min-width: 24px;
+            display: inline-block;
+            text-align: right;
+        }
+
+        .json-key {
+            color: #79c0ff;
+        }
+
+        .json-string {
+            color: #a5d6ff;
+        }
+
+        .json-number {
+            color: #79c0ff;
+        }
+
+        .json-boolean {
+            color: #ff7b72;
+        }
+
+        .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .skill-category {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .skill-category h4 {
+            color: #f0883e;
+            margin-bottom: 12px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .skill-category h4::before {
+            content: "▶";
+            margin-right: 8px;
+            color: #7c3aed;
+        }
+
+        .skill-list {
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .skill-list li {
+            color: #c9d1d9;
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .skill-list li::before {
+            content: "•";
+            color: #58a6ff;
+            position: absolute;
+            left: 0;
+        }
+
+        .ascii-art {
+            color: #7c3aed;
+            font-size: 10px;
+            line-height: 1;
+            margin: 20px 0;
+            white-space: pre;
+        }
+
+        .status-bar {
+            background: #21262d;
+            padding: 8px 16px;
+            border-top: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .typing-effect {
+            border-right: 2px solid #58a6ff;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { border-color: #58a6ff; }
+            51%, 100% { border-color: transparent; }
+        }
+
+        .highlight {
+            background: rgba(88, 166, 255, 0.1);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .terminal {
+                margin: 10px;
+                border-radius: 0;
+            }
+
+            .terminal-content {
+                padding: 16px;
+            }
+
+            .skill-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ascii-art {
+                font-size: 8px;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <h1>我喜欢你</h1>
-    <p>今生今世都喜欢你</p>
-    <canvas id="firework-canvas"></canvas>
-    <script src="https://cdn.jsdelivr.net/gh/kof97/Scripts/Fireworks.js"></script>
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="btn btn-close"></div>
+                <div class="btn btn-minimize"></div>
+                <div class="btn btn-maximize"></div>
+            </div>
+            <div class="terminal-title">Noah@sre-engineer: ~/profile</div>
+        </div>
+
+        <div class="terminal-content">
+            <div class="prompt-line">
+                <span class="prompt">noah@localhost:~$</span>
+                <span class="command">whoami</span>
+            </div>
+            <div class="output">
+                <div class="ascii-art">
+    ███╗   ██╗ ██████╗  █████╗ ██╗  ██╗
+    ████╗  ██║██╔═══██╗██╔══██╗██║  ██║
+    ██╔██╗ ██║██║   ██║███████║███████║
+    ██║╚██╗██║██║   ██║██╔══██║██╔══██║
+    ██║ ╚████║╚██████╔╝██║  ██║██║  ██║
+    ╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+                </div>
+                <p>SRE Engineer | Infrastructure Automator | AI Enthusiast</p>
+            </div>
+
+            <div class="prompt-line">
+                <span class="prompt">noah@localhost:~$</span>
+                <span class="command">cat profile.json</span>
+            </div>
+            <div class="output">
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="filename">profile.json</span>
+                    </div>
+<pre><span class="line-numbers">1</span>{
+<span class="line-numbers">2</span>  <span class="json-key">"name"</span>: <span class="json-string">"Noah"</span>,
+<span class="line-numbers">3</span>  <span class="json-key">"role"</span>: <span class="json-string">"Site Reliability Engineer"</span>,
+<span class="line-numbers">4</span>  <span class="json-key">"location"</span>: <span class="json-string">"Beijing, China"</span>,
+<span class="line-numbers">5</span>  <span class="json-key">"experience_years"</span>: <span class="json-number">5</span>,
+<span class="line-numbers">6</span>  <span class="json-key">"specialties"</span>: [
+<span class="line-numbers">7</span>    <span class="json-string">"Infrastructure Automation"</span>,
+<span class="line-numbers">8</span>    <span class="json-string">"Container Orchestration"</span>,
+<span class="line-numbers">9</span>    <span class="json-string">"Monitoring & Alerting"</span>,
+<span class="line-numbers">10</span>    <span class="json-string">"Performance Optimization"</span>
+<span class="line-numbers">11</span>  ],
+<span class="line-numbers">12</span>  <span class="json-key">"current_status"</span>: <span class="json-string">"Building resilient systems"</span>,
+<span class="line-numbers">13</span>  <span class="json-key">"coffee_consumption"</span>: <span class="json-string">"HIGH"</span>,
+<span class="line-numbers">14</span>  <span class="json-key">"ai_interest"</span>: <span class="json-string">"Machine Learning & LLMs"</span>,
+<span class="line-numbers">15</span>  <span class="json-key">"interests"</span>: [
+<span class="line-numbers">16</span>    <span class="json-string">"Artificial Intelligence"</span>,
+<span class="line-numbers">17</span>    <span class="json-string">"System Architecture"</span>,
+<span class="line-numbers">18</span>    <span class="json-string">"Automation Tools"</span>,
+<span class="line-numbers">19</span>    <span class="json-string">"Performance Tuning"</span>
+<span class="line-numbers">20</span>  ],
+<span class="line-numbers">21</span>  <span class="json-key">"debug_mode"</span>: <span class="json-boolean">true</span>,
+<span class="line-numbers">22</span>  <span class="json-key">"learning"</span>: <span class="json-boolean">true</span>,
+<span class="line-numbers">23</span>  <span class="json-key">"available_for_hire"</span>: <span class="json-boolean">false</span>
+<span class="line-numbers">24}</pre>
+                </div>
+            </div>
+
+            <div class="prompt-line">
+                <span class="prompt">noah@localhost:~$</span>
+                <span class="command">ls -la skills/</span>
+            </div>
+            <div class="output">
+                <div class="skill-grid">
+                    <div class="skill-category">
+                        <h4>Infrastructure</h4>
+                        <ul class="skill-list">
+                            <li>Linux Administration</li>
+                            <li>Docker & Kubernetes</li>
+                            <li>AWS/Alibaba Cloud</li>
+                            <li>Terraform/Ansible</li>
+                            <li>Nginx/Apache</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Monitoring</h4>
+                        <ul class="skill-list">
+                            <li>Prometheus/Grafana</li>
+                            <li>ELK/EFK Stack</li>
+                            <li>Jaeger Tracing</li>
+                            <li>APM Solutions</li>
+                            <li>Custom Metrics</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Programming</h4>
+                        <ul class="skill-list">
+                            <li>Python/Shell</li>
+                            <li>Go/Rust</li>
+                            <li>SQL/NoSQL</li>
+                            <li>Git/CI/CD</li>
+                            <li>API Development</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h4>AI & Machine Learning</h4>
+                        <ul class="skill-list">
+                            <li>Large Language Models</li>
+                            <li>Machine Learning Ops</li>
+                            <li>TensorFlow/PyTorch</li>
+                            <li>AI Infrastructure</li>
+                            <li>Model Deployment</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Databases</h4>
+                        <ul class="skill-list">
+                            <li>MySQL/PostgreSQL</li>
+                            <li>Redis/MongoDB</li>
+                            <li>ClickHouse</li>
+                            <li>Database Tuning</li>
+                            <li>Backup Strategies</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prompt-line">
+                <span class="prompt">noah@localhost:~$</span>
+                <span class="command">grep -r "philosophy" ~/</span>
+            </div>
+            <div class="output">
+                <div class="code-block">
+<pre><span class="comment"># My Engineering Philosophy</span>
+
+<span class="highlight">Automation > Manual Work</span>
+<span class="highlight">Monitoring > Assumptions</span>
+<span class="highlight">Prevention > Reaction</span>
+<span class="highlight">Documentation > Memory</span>
+<span class="highlight">Simplicity > Complexity</span>
+
+<span class="comment"># Core Beliefs</span>
+- Measure everything, assume nothing
+- Fail fast, recover faster
+- Infrastructure as Code is not optional
+- Observability is a feature, not an afterthought
+- Blameless post-mortems lead to better systems</pre>
+                </div>
+            </div>
+
+            <div class="prompt-line">
+                <span class="prompt">noah@localhost:~$</span>
+                <span class="command">ps aux | grep hobbies</span>
+            </div>
+            <div class="output">
+                <div class="code-block">
+<pre>USER       PID  %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+noah      1001  15.2  2.1  98765  4321 pts/0    R+   08:30   1:23 ai_research
+noah      1002   8.7  1.5  76543  2109 pts/1    S    09:15   0:45 tech_research
+noah      1003   5.4  0.8  54321  1098 pts/2    S    10:00   0:30 reading_books
+noah      1004   3.2  0.5  32109   876 pts/3    S    11:30   0:15 gaming_session
+noah      1005   2.1  0.3  21098   543 pts/4    S    14:00   0:08 music_player</pre>
+                </div>
+            </div>
+
+            <div class="prompt-line">
+                <span class="prompt">noah@localhost:~$</span>
+                <span class="command">curl -X GET /contact</span>
+            </div>
+            <div class="output">
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="filename">HTTP/1.1 200 OK</span>
+                    </div>
+<pre>{
+  <span class="json-key">"email"</span>: <span class="json-string">"noah.sre@example.com"</span>,
+  <span class="json-key">"github"</span>: <span class="json-string">"https://github.com/noah"</span>,
+  <span class="json-key">"linkedin"</span>: <span class="json-string">"https://linkedin.com/in/noah-sre"</span>,
+  <span class="json-key">"location"</span>: <span class="json-string">"Beijing, China"</span>,
+  <span class="json-key">"timezone"</span>: <span class="json-string">"UTC+8"</span>,
+  <span class="json-key">"preferred_contact"</span>: <span class="json-string">"email"</span>
+}</pre>
+                </div>
+            </div>
+
+            <div class="prompt-line">
+                <span class="prompt">noah@localhost:~$</span>
+                <span class="command typing-effect">echo "Thanks for visiting!"</span>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div>Lines: 127 | Lang: JSON | Encoding: UTF-8</div>
+            <div>Last modified: 2025-08-30 | SRE Mode: ON</div>
+        </div>
+    </div>
+
     <script>
-      var fireworks = new Fireworks();
-      fireworks.initialize("firework-canvas");
-      fireworks.start();
+        // 打字机效果
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.innerHTML = '';
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.classList.add('typing-effect');
+                }
+            }
+            type();
+        }
+
+        // 模拟终端加载效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const terminal = document.querySelector('.terminal');
+            terminal.style.opacity = '0';
+            terminal.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                terminal.style.transition = 'all 0.6s ease';
+                terminal.style.opacity = '1';
+                terminal.style.transform = 'translateY(0)';
+            }, 100);
+
+            // 为技能卡片添加悬停效果
+            const skillCategories = document.querySelectorAll('.skill-category');
+            skillCategories.forEach(category => {
+                category.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 12px rgba(88, 166, 255, 0.15)';
+                    this.style.borderColor = '#58a6ff';
+                    this.style.transition = 'all 0.3s ease';
+                });
+
+                category.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                    this.style.borderColor = '#30363d';
+                });
+            });
+
+            // 代码块语法高亮效果
+            const codeBlocks = document.querySelectorAll('.code-block');
+            codeBlocks.forEach(block => {
+                block.addEventListener('mouseenter', function() {
+                    this.style.borderColor = '#58a6ff';
+                    this.style.transition = 'border-color 0.3s ease';
+                });
+
+                block.addEventListener('mouseleave', function() {
+                    this.style.borderColor = '#30363d';
+                });
+            });
+        });
+
+        // 模拟实时状态更新
+        setInterval(() => {
+            const statusTime = document.querySelector('.status-bar div:last-child');
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
+            statusTime.innerHTML = `Last modified: ${now.toISOString().split('T')[0]} ${timeStr} | SRE Mode: ON`;
+        }, 1000);
     </script>
-  </body>
+</body>
 </html>
